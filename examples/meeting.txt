@@ -12,3 +12,6 @@ Jo: What does MRR mean?
 Alex: I feel the new pricing page helped churn.
 Sam: Signups in February were 600.
 Alex: Revenue last quarter was 5 million.
+Jo: NPS in March was 60.
+Sam: What was NPS in March?
+Alex: Revenue in Q1 was $5.2M.
