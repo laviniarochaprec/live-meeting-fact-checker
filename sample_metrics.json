@@ -50,6 +50,18 @@
       "owner": "Growth",
       "source": "Sample growth dashboard",
       "values": {"2026-01": 410, "2026-02": 395, "2026-03": 470, "2026-04": 430, "2026-05": 520, "2026-06": 545}
+    },
+    {
+      "id": "nps",
+      "label": "NPS",
+      "names": ["nps", "net promoter score"],
+      "unit": "count",
+      "status": "answer-only",
+      "tolerance": {"type": "relative", "value": 0.1},
+      "definition": "Share of promoters minus share of detractors in the monthly survey, from -100 to 100.",
+      "owner": "Customer Success",
+      "source": "Sample survey tool (definition not yet reviewed)",
+      "values": {"2026-01": 31, "2026-02": 33, "2026-03": 35, "2026-04": 34, "2026-05": 38, "2026-06": 41}
     }
   ],
   "glossary": [

@@ -188,10 +188,14 @@ def _check(sentence, who, data, verbose=False):
         if value_for(met, key) is None:
             return quiet(f"no data for {period_label(key)}")
         note = "" if period else " (latest available, no period was mentioned)"
-        return card("answer", who, [f"{met['label']}, {period_label(key)}: {fmt(met, value_for(met, key))}{note}"],
-                    met["source"])
+        lines = [f"{met['label']}, {period_label(key)}: {fmt(met, value_for(met, key))}{note}"]
+        if met.get("status") == "answer-only":
+            lines.append("Not validated yet: treat as indicative.")
+        return card("answer", who, lines, met["source"])
 
-    # 3) a statement with a number: check it
+    # 3) a statement with a number: check it (only metrics with a validated definition may correct anyone)
+    if met.get("status") == "answer-only":
+        return quiet(f"{met['label']} is answer-only (not validated), so it never corrects anyone")
     if not period:
         return quiet("no period mentioned, so I cannot tell which value to compare")
     actual = value_for(met, period)
