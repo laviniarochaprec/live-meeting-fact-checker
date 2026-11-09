@@ -13,9 +13,12 @@ Honest status: **Phase 0 is done. Everything else is open.** Items marked 🙋 a
 
 Goal: anyone can describe their own metrics and trust the result.
 
-- [ ] Aggregations for quarters and years (sum / average / last) 🙋
-- [ ] Catalog file format v1, with validation and a JSON Schema ([spec](METRIC_CATALOG.md)) 🙋
-- [ ] `validated` vs `answer-only` status per metric, enforced by the checker
+- [x] Quarters with per-metric aggregation (sum / average / last)
+- [ ] Years and "year to date" 🙋
+- [x] Catalog validator (`validate_catalog.py`), run on every push
+- [ ] JSON Schema for the catalog, so editors can validate as you type ([spec](METRIC_CATALOG.md)) 🙋
+- [x] `validated` vs `answer-only` status per metric, enforced by the checker
+- [x] Cards as plain data, with `--json` output a panel can read
 - [ ] Slices: "revenue for the EMEA team in March" (metric + period + slice)
 - [ ] Relative periods: "last week", "year to date", "same month last year"
 - [ ] Number parsing in other languages and formats (Portuguese, Spanish, German decimals) 🙋
