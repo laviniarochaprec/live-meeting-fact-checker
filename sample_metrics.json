@@ -1,0 +1,68 @@
+{
+  "_notice": "ALL DATA IN THIS FILE IS FICTIONAL. 'Acme Cloud' does not exist. Numbers were made up for the demo and describe no real company.",
+  "company": "Acme Cloud (fictional)",
+  "as_of": "2026-06-30",
+  "metrics": [
+    {
+      "id": "revenue",
+      "label": "Revenue",
+      "names": ["revenue", "sales"],
+      "unit": "usd",
+      "tolerance": {"type": "relative", "value": 0.03},
+      "definition": "Recognized revenue in the month, in USD, excluding taxes and one-time hardware sales.",
+      "owner": "Finance",
+      "source": "Sample finance dashboard",
+      "values": {"2026-01": 1620000, "2026-02": 1705000, "2026-03": 1842000, "2026-04": 1790000, "2026-05": 1933000, "2026-06": 2018000}
+    },
+    {
+      "id": "churn",
+      "label": "Churn rate",
+      "names": ["churn", "churn rate"],
+      "unit": "percent",
+      "tolerance": {"type": "absolute", "value": 0.5},
+      "definition": "Customers lost in the month divided by active customers at the start of the month.",
+      "owner": "Customer Success",
+      "source": "Sample retention report",
+      "values": {"2026-01": 3.8, "2026-02": 4.0, "2026-03": 4.1, "2026-04": 4.4, "2026-05": 3.9, "2026-06": 3.7}
+    },
+    {
+      "id": "active_customers",
+      "label": "Active customers",
+      "names": ["active customer"],
+      "unit": "count",
+      "tolerance": {"type": "relative", "value": 0.03},
+      "definition": "Customers with at least one paid invoice in the last 90 days.",
+      "owner": "Finance",
+      "source": "Sample billing export",
+      "values": {"2026-01": 11820, "2026-02": 12040, "2026-03": 12310, "2026-04": 12255, "2026-05": 12600, "2026-06": 12905}
+    },
+    {
+      "id": "new_signups",
+      "label": "New signups",
+      "names": ["new signup", "signup", "sign-up"],
+      "unit": "count",
+      "tolerance": {"type": "relative", "value": 0.03},
+      "definition": "Accounts that completed registration and started a paid plan in the month.",
+      "owner": "Growth",
+      "source": "Sample growth dashboard",
+      "values": {"2026-01": 410, "2026-02": 395, "2026-03": 470, "2026-04": 430, "2026-05": 520, "2026-06": 545}
+    }
+  ],
+  "glossary": [
+    {
+      "terms": ["qualified lead"],
+      "answer": "A signup that finished onboarding and used the product on at least 3 different days in its first 14 days.",
+      "source": "Sample metrics handbook, section 2"
+    },
+    {
+      "terms": ["mrr", "monthly recurring revenue"],
+      "answer": "Monthly recurring revenue: the sum of all active subscriptions, normalized to one month.",
+      "source": "Sample metrics handbook, section 1"
+    },
+    {
+      "terms": ["net revenue retention", "nrr"],
+      "answer": "Revenue from customers who were active 12 months ago, today, divided by what they paid then. Includes upgrades and churn.",
+      "source": "Sample metrics handbook, section 4"
+    }
+  ]
+}

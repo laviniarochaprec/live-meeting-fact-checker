@@ -1,0 +1,14 @@
+# A made-up meeting at a made-up company (Acme Cloud). Nothing here is real.
+# Run:  python demo.py --transcript examples/meeting.txt --verbose
+Alex: Let's start with the numbers. Revenue in March was about $2.1M.
+Sam: I thought churn was higher, maybe 6% in March.
+Jo: Active customers in June were 12,900.
+Alex: What is an active customer?
+Sam: How many new signups did we get last month?
+Jo: The offsite was a great success, everyone loved it.
+Alex: Revenue in April was $1.8M.
+Sam: What's churn in June?
+Jo: What does MRR mean?
+Alex: I feel the new pricing page helped churn.
+Sam: Signups in February were 600.
+Alex: Revenue last quarter was 5 million.

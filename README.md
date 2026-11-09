@@ -2,7 +2,8 @@
 
 **An open idea: an assistant that listens to your meeting, catches wrong numbers as they are said, and answers questions on the spot, using your own company's data.**
 
-> Status: idea + design notes. A working prototype exists; this repo is where the idea gets shaped in the open.
+> Status: idea + design notes + a **tiny runnable demo** ([try it](#try-the-demo-in-30-seconds)). No audio and no database yet.
+> **All data in this repo is fictional.** The company in the demo ("Acme Cloud") does not exist.
 > **We want your comments.** Open a [Discussion](../../discussions) or an [Issue](../../issues) and tell us what you would use it for, what would break it, and what you would build on top.
 
 ---
@@ -92,6 +93,44 @@ These come from building a prototype and getting it wrong a few times.
 - **Bigger model, slower panel.** A larger speech model was about three times slower on a laptop CPU for modest gains. Latency matters more than polish in a live meeting.
 - **Same name, different numbers.** The same metric split by team gave different values in two systems, because "team" was defined differently. The tool must know *which* definition it is quoting, and say so on the card.
 - **Do not trust one source for everything.** Some questions are answered by a database, some by a BI model, some by a document. Route by question type and label the source.
+
+## Try the demo in 30 seconds
+
+> ⚠️ **Everything below is fictional.** `sample_metrics.json` describes an imaginary company, "Acme Cloud".
+> The numbers were made up for this demo. They are not from any real business.
+
+The demo covers the *decision logic* only: you type or paste what someone said, and it replies like the side panel would. There is no microphone, no speech-to-text and no database. Python 3.8+, standard library only.
+
+```bash
+git clone https://github.com/laviniarochaprec/live-meeting-fact-checker
+cd live-meeting-fact-checker
+
+python demo.py "Revenue in March was about \$2.1M"        # a wrong number  -> flagged
+python demo.py "Active customers in June were 12,900"      # close enough   -> confirmed
+python demo.py "How many new signups did we get last month?"  # a question  -> answered
+python demo.py "What is an active customer?"               # a definition   -> answered
+python demo.py --transcript examples/meeting.txt --verbose # a whole made-up meeting
+python demo.py                                             # type your own sentences
+```
+
+(On Windows use `py demo.py`. In a shell, escape the `$` or use single quotes.)
+
+What you will see:
+
+```
+Sam: I thought churn was higher, maybe 6% in March.
+  +-- DIFFERENT FROM SOURCE  (said by Sam)
+  |   Churn rate, March 2026: 4.1%
+  |   Said 6.0% (1.9 pp above the source).
+  |   Source: Sample retention report  [fictional demo data]
+  +--
+```
+
+**It stays quiet on purpose** when it is not sure: no known metric, no period ("Revenue was $2M."), a period with no data, two metrics in one sentence, or several numbers. Run with `--verbose` to see the reason each time. That silence is the most important behavior to get right.
+
+**Make it yours:** edit `sample_metrics.json` (metrics, aliases, tolerances, definitions, glossary) and see what breaks. That file is the "metric catalog" from the design above. Tell us what you had to change.
+
+**What the demo is not:** it is not the product. Real audio, speaker identification, real data connectors and a shared panel are the open pieces below.
 
 ## Open questions (this is where we need you)
 
