@@ -37,6 +37,7 @@ PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent\b|per cent\b)", re.I)
 USD = re.compile(r"\$\s*(\d[\d,]*(?:\.\d+)?)\s*(million|thousand|billion|mm|mil|k|m|b)?\b", re.I)
 SCALED = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(million|thousand|billion|k|m)\b", re.I)
 PLAIN = re.compile(r"(?<![\w.])(\d[\d,]*(?:\.\d+)?)(?![\w%])")
+QUARTER_RX = re.compile(r"\bQ([1-4])\b(?:\s+(\d{4}))?", re.I)
 MONTH_RX = re.compile(r"\b(" + "|".join(sorted(MONTHS, key=len, reverse=True)) + r")\b(?:\s+(\d{4}))?", re.I)
 QUESTION_START = re.compile(r"^\s*(what|what's|whats|how|who|which|when|where|why|is|are|did|does|do|can|could)\b", re.I)
 DEFINITION_CUE = re.compile(r"\b(what is|what's|what are|what does|define|definition|meaning|mean)\b", re.I)
@@ -69,9 +70,17 @@ def numbers(text):
 
 
 def find_period(text, as_of):
-    """'YYYY-MM' or None. Understands month names, 'last month' and 'this month'."""
+    """'YYYY-MM' or 'YYYY-Qn' or None. Understands month names, quarters, 'last/this month|quarter'."""
     y, mth = as_of
     low = text.lower()
+    q_now = (mth - 1) // 3 + 1
+    if "last quarter" in low:
+        return f"{y}-Q{q_now - 1}" if q_now > 1 else f"{y - 1}-Q4"
+    if "this quarter" in low:
+        return f"{y}-Q{q_now}"
+    mq = QUARTER_RX.search(text)
+    if mq:
+        return f"{int(mq.group(2)) if mq.group(2) else y}-Q{mq.group(1)}"
     if "last month" in low:
         return f"{y - (mth == 1)}-{(mth - 2) % 12 + 1:02d}"
     if "this month" in low:
@@ -115,7 +124,20 @@ def fmt(met, v):
 
 def period_label(key):
     y, m = key.split("-")
-    return f"{MONTH_NAME[int(m)]} {y}"
+    return f"{m} {y}" if m.startswith("Q") else f"{MONTH_NAME[int(m)]} {y}"
+
+
+def value_for(met, key):
+    """The metric's value for a month ('2026-03') or a quarter ('2026-Q1'); None if it cannot be computed.
+    A quarter needs all three months and an 'aggregation' (sum, avg or last) in the catalog."""
+    if "-Q" not in key:
+        return met["values"].get(key)
+    agg = met.get("aggregation")
+    year, q = key.split("-Q")
+    months = [met["values"].get(f"{year}-{m:02d}") for m in range(3 * int(q) - 2, 3 * int(q) + 1)]
+    if agg not in ("sum", "avg", "last") or any(v is None for v in months):
+        return None
+    return {"sum": sum(months), "avg": sum(months) / 3, "last": months[-1]}[agg]
 
 
 def card(kind, who, lines, source):
@@ -157,22 +179,23 @@ def check(sentence, who, data, verbose=False):
     if is_question:
         latest = max(met["values"])
         key = period or latest
-        if key not in met["values"]:
+        if value_for(met, key) is None:
             return quiet(f"no data for {period_label(key)}")
         note = "" if period else " (latest available, no period was mentioned)"
-        return card("answer", who, [f"{met['label']}, {period_label(key)}: {fmt(met, met['values'][key])}{note}"],
+        return card("answer", who, [f"{met['label']}, {period_label(key)}: {fmt(met, value_for(met, key))}{note}"],
                     met["source"])
 
     # 3) a statement with a number: check it
     if not period:
         return quiet("no period mentioned, so I cannot tell which value to compare")
-    if period not in met["values"]:
+    actual = value_for(met, period)
+    if actual is None:
         return quiet(f"no data for {period_label(period)}")
     kinds = {"percent": {"pct"}, "usd": {"usd", "scaled", "plain"}, "count": {"plain", "scaled"}}[met["unit"]]
     cands = [v for k, v in numbers(sentence) if k in kinds]
     if len(cands) != 1:
         return quiet("no comparable number" if not cands else "several numbers, not sure which one")
-    said, actual = cands[0], met["values"][period]
+    said = cands[0]
     tol = met["tolerance"]
     if tol["type"] == "relative":
         off = abs(said - actual) / actual > tol["value"]
