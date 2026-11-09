@@ -37,7 +37,7 @@ The catalog is the heart of the project. It says *what a number means* and *wher
 | `definition` | One or two sentences, plain language. Shown when someone asks what it means. |
 | `owner` | Who to ask. Shown on definition cards. |
 | `source` | Where the number comes from. Shown on every card. |
-| `status` | `validated` may correct people. `answer-only` may only answer questions. *(planned)* |
+| `status` | `validated` (the default) may correct people. `answer-only` may only answer questions, and the card says it is not validated. **Implemented in the demo.** |
 | `values` | The demo's fake data. Real connectors replace this with a query. |
 
 ## The rule that matters most
@@ -52,9 +52,17 @@ Definitions that are not metrics ("qualified lead", "MRR") live next to the metr
 {"terms": ["qualified lead"], "answer": "A signup that finished onboarding...", "source": "Handbook, section 2"}
 ```
 
+## Validating a catalog
+
+```bash
+python validate_catalog.py path/to/catalog.json
+```
+
+It checks that ids are unique, that **no alias is shared by two metrics** (the checker could not tell them apart), that units, aggregations, statuses and tolerances are valid, and that value keys look like `2026-03`. A catalog that passes is well-formed, not correct. The sample catalog is validated on every push.
+
 ## Where this is going
 
 - A JSON Schema so editors can validate a catalog as you type. 🙋
 - `slices` (team, region, product) so "revenue for EMEA in March" is checkable.
-- `status`, `reviewed_on` and `owner` enforced, so a stale definition shows up as a warning.
+- `reviewed_on` enforced, so a stale definition shows up as a warning.
 - A connector per metric instead of inline `values`. See the [roadmap](ROADMAP.md), Phase 2.
