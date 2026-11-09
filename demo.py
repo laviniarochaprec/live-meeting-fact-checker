@@ -141,17 +141,23 @@ def value_for(met, key):
 
 
 def card(kind, who, lines, source):
-    title = {"diff": "DIFFERENT FROM SOURCE", "ok": "CONFIRMED", "answer": "ANSWER"}[kind]
-    head = f"{title}" + (f"  (said by {who})" if who else "")
+    """The one data shape that crosses boundaries (see docs/ARCHITECTURE.md): kind is diff | ok | answer."""
+    return {"kind": kind, "said_by": who, "lines": lines, "source": source}
+
+
+def render(c):
+    """A card as text for the terminal."""
+    title = {"diff": "DIFFERENT FROM SOURCE", "ok": "CONFIRMED", "answer": "ANSWER"}[c["kind"]]
+    head = f"{title}" + (f"  (said by {c['said_by']})" if c["said_by"] else "")
     out = ["  +-- " + head]
-    out += ["  |   " + ln for ln in lines]
-    out += ["  |   Source: " + source + "  [fictional demo data]", "  +--"]
+    out += ["  |   " + ln for ln in c["lines"]]
+    out += ["  |   Source: " + c["source"] + "  [fictional demo data]", "  +--"]
     return "\n".join(out)
 
 
 # ---------------------------------------------------------------- the decision
-def check(sentence, who, data, verbose=False):
-    """Returns a card (str) or None. None means: stay quiet."""
+def _check(sentence, who, data, verbose=False):
+    """A card (dict), a short 'quiet: why' note (str, only when verbose), or None. None means: stay quiet."""
     metrics, glossary = data["metrics"], data.get("glossary", [])
     y, m, _ = data["as_of"].split("-")
     as_of = (int(y), int(m))
@@ -212,14 +218,24 @@ def check(sentence, who, data, verbose=False):
 
 
 # ---------------------------------------------------------------- CLI
+def check(sentence, who, data, verbose=False):
+    """Public entry point: like _check, and stamps the card with when the data was read."""
+    out = _check(sentence, who, data, verbose)
+    if isinstance(out, dict):
+        out["as_of"] = data["as_of"]
+    return out
+
+
 def sentences(text):
     return [s for s in re.split(r"(?<=[.?!])\s+", text.strip()) if s]
 
 
-def run_text(text, who, data, verbose):
+def run_text(text, who, data, verbose, as_json=False):
     for s in sentences(text):
         out = check(s, who, data, verbose)
-        if out:
+        if isinstance(out, dict):
+            print(json.dumps(out, ensure_ascii=False) if as_json else render(out))
+        elif out and not as_json:
             print(out)
 
 
@@ -229,16 +245,17 @@ def main():
     ap.add_argument("--transcript", help="a text file with lines like 'Name: sentence'")
     ap.add_argument("--data", default=str(HERE / "sample_metrics.json"))
     ap.add_argument("--verbose", action="store_true", help="say why it stayed quiet")
+    ap.add_argument("--json", action="store_true", help="print each card as one JSON line (for a panel to read)")
     a = ap.parse_args()
     try:
         sys.stdout.reconfigure(errors="replace")
     except Exception:
         pass
     data = json.loads(Path(a.data).read_text(encoding="utf-8"))
-    print(BANNER + "\n")
+    print(BANNER + "\n", file=sys.stderr if a.json else sys.stdout)
 
     if a.text:
-        run_text(" ".join(a.text), None, data, a.verbose)
+        run_text(" ".join(a.text), None, data, a.verbose, a.json)
     elif a.transcript:
         for line in Path(a.transcript).read_text(encoding="utf-8").splitlines():
             if not line.strip() or line.startswith("#"):
@@ -246,7 +263,7 @@ def main():
             m = re.match(r"^([A-Za-z][\w ]{0,20}):\s*(.*)$", line)
             who, text = (m.group(1), m.group(2)) if m else (None, line)
             print(f"{who + ': ' if who else ''}{text}")
-            run_text(text, who, data, a.verbose)
+            run_text(text, who, data, a.verbose, a.json)
             print()
     else:
         print("Type a sentence (empty line to quit). Try: Revenue in March was about $2.1M\n")
@@ -257,7 +274,7 @@ def main():
                 break
             if not line:
                 break
-            run_text(line, None, data, a.verbose)
+            run_text(line, None, data, a.verbose, a.json)
             print()
 
 

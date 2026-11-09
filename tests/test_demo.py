@@ -12,7 +12,8 @@ DATA = json.loads((ROOT / "sample_metrics.json").read_text(encoding="utf-8"))
 
 
 def run(sentence):
-    return demo.check(sentence, None, DATA)
+    out = demo.check(sentence, None, DATA)
+    return demo.render(out) if isinstance(out, dict) else out
 
 
 class FlagsWrongNumbers(unittest.TestCase):
@@ -117,6 +118,19 @@ class Quarters(unittest.TestCase):
         met = dict(DATA["metrics"][0])
         met.pop("aggregation")
         self.assertIsNone(demo.value_for(met, "2026-Q1"))
+
+
+class CardShape(unittest.TestCase):
+    def test_card_is_plain_data(self):
+        c = demo.check("Revenue in March was about $2.1M.", "Alex", DATA)
+        self.assertEqual(c["kind"], "diff")
+        self.assertEqual(c["said_by"], "Alex")
+        self.assertEqual(c["as_of"], DATA["as_of"])
+        self.assertIn("Sample finance dashboard", c["source"])
+        self.assertIsInstance(json.dumps(c), str)
+
+    def test_quiet_returns_none(self):
+        self.assertIsNone(demo.check("Nothing to see here.", None, DATA))
 
 
 class CardText(unittest.TestCase):
