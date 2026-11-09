@@ -142,5 +142,20 @@ class CardText(unittest.TestCase):
         self.assertIn("14% above", run("Revenue in March was about $2.1M."))
 
 
+class AnswerOnlyMetrics(unittest.TestCase):
+    """The most important rule: a metric that is not validated never corrects anyone."""
+
+    def test_a_wrong_number_on_an_unvalidated_metric_is_not_flagged(self):
+        self.assertIsNone(run("NPS in March was 60."))
+
+    def test_the_same_metric_can_still_answer_a_question_with_a_warning(self):
+        out = run("What was NPS in March?")
+        self.assertIn("35", out)
+        self.assertIn("Not validated yet", out)
+
+    def test_validated_metrics_have_no_warning(self):
+        self.assertNotIn("Not validated", run("What was churn in March?"))
+
+
 if __name__ == "__main__":
     unittest.main()
