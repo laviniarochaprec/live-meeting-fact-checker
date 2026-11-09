@@ -119,5 +119,14 @@ class Quarters(unittest.TestCase):
         self.assertIsNone(demo.value_for(met, "2026-Q1"))
 
 
+class CardText(unittest.TestCase):
+    def test_small_gaps_show_a_decimal(self):
+        # 5.0M vs 5.167M is a 3.2% gap: it must not be printed as "3%" next to a 3% tolerance
+        self.assertIn("3.2% below", run("Revenue last quarter was 5 million."))
+
+    def test_large_gaps_are_rounded(self):
+        self.assertIn("14% above", run("Revenue in March was about $2.1M."))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -199,7 +199,8 @@ def check(sentence, who, data, verbose=False):
     tol = met["tolerance"]
     if tol["type"] == "relative":
         off = abs(said - actual) / actual > tol["value"]
-        gap = f"{abs(said - actual) / actual * 100:.0f}%"
+        pct = abs(said - actual) / actual * 100
+        gap = f"{pct:.1f}%" if pct < 10 else f"{pct:.0f}%"  # "3%" next to a 3% tolerance would look contradictory
     else:
         off = abs(said - actual) > tol["value"]
         gap = f"{abs(said - actual):.1f} pp"
