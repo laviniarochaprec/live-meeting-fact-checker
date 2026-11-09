@@ -95,5 +95,29 @@ class Parsing(unittest.TestCase):
         self.assertEqual(demo.find_period("last month", (2026, 1)), "2025-12")
 
 
+class Quarters(unittest.TestCase):
+    def test_revenue_quarter_is_the_sum_of_months(self):
+        self.assertIn("CONFIRMED", run("Revenue in Q1 was $5.2M."))
+
+    def test_churn_quarter_is_the_average(self):
+        self.assertIn("4.0%", run("What was churn in Q2?"))
+
+    def test_active_customers_quarter_is_the_last_month(self):
+        self.assertIn("CONFIRMED", run("Active customers in Q1 were 12,310."))
+
+    def test_relative_quarters(self):
+        self.assertEqual(demo.find_period("last quarter", (2026, 6)), "2026-Q1")
+        self.assertEqual(demo.find_period("last quarter", (2026, 2)), "2025-Q4")
+        self.assertEqual(demo.find_period("this quarter", (2026, 6)), "2026-Q2")
+
+    def test_quarter_without_data_is_quiet(self):
+        self.assertIsNone(run("Revenue in Q3 was $6M."))
+
+    def test_metric_without_aggregation_is_not_checked_by_quarter(self):
+        met = dict(DATA["metrics"][0])
+        met.pop("aggregation")
+        self.assertIsNone(demo.value_for(met, "2026-Q1"))
+
+
 if __name__ == "__main__":
     unittest.main()
