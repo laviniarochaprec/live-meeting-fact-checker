@@ -109,8 +109,14 @@ python demo.py "Revenue in March was about \$2.1M"        # a wrong number  -> f
 python demo.py "Active customers in June were 12,900"      # close enough   -> confirmed
 python demo.py "How many new signups did we get last month?"  # a question  -> answered
 python demo.py "What is an active customer?"               # a definition   -> answered
+python demo.py "Revenue in Q1 was \$5.2M"                  # quarters work too
+python demo.py "NPS in March was 60" --verbose             # unvalidated metric -> never corrects
 python demo.py --transcript examples/meeting.txt --verbose # a whole made-up meeting
+python demo.py --json "Churn in March was 6%"              # the card as JSON, for a panel to read
 python demo.py                                             # type your own sentences
+
+python -m unittest discover -s tests                       # run the tests (stdlib only)
+python validate_catalog.py                                 # validate a metric catalog
 ```
 
 (On Windows use `py demo.py`. In a shell, escape the `$` or use single quotes.)
@@ -128,9 +134,19 @@ Sam: I thought churn was higher, maybe 6% in March.
 
 **It stays quiet on purpose** when it is not sure: no known metric, no period ("Revenue was $2M."), a period with no data, two metrics in one sentence, or several numbers. Run with `--verbose` to see the reason each time. That silence is the most important behavior to get right.
 
+**A metric that is not validated never corrects anyone.** Mark it `"status": "answer-only"` in the catalog (the sample has one, `NPS`) and it will still answer questions, with a "not validated yet" note, but it will not flag what people say. A wrong correction costs more trust than a missed one.
+
 **Make it yours:** edit `sample_metrics.json` (metrics, aliases, tolerances, definitions, glossary) and see what breaks. That file is the "metric catalog" from the design above. Tell us what you had to change.
 
 **What the demo is not:** it is not the product. Real audio, speaker identification, real data connectors and a shared panel are the open pieces below.
+
+## Where to go next
+
+- 🧭 [Vision](docs/VISION.md): why this, who it is for, what winning looks like
+- 🗺️ [Roadmap](docs/ROADMAP.md): phases and what is open (look for 🙋)
+- 📐 [Metric catalog spec](docs/METRIC_CATALOG.md): the format everything depends on
+- 🏗️ [Architecture](docs/ARCHITECTURE.md): components, privacy model, threats
+- 🤝 [Contributing](CONTRIBUTING.md): the easiest ways to help need no code
 
 ## Open questions (this is where we need you)
 
