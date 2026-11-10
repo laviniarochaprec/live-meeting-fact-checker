@@ -49,6 +49,37 @@ Three behaviors:
 
 It is connected to **each company's own database and docs**, so the same tool adapts to any business by changing the metric catalog, not the code.
 
+## Made to plug into *your* company's data
+
+The tool itself knows nothing about any business. What it knows comes from a **metric catalog** that each company writes: what a metric means, who owns it, how close a spoken number must be to count as right, and **where the real value lives**.
+
+| Your company has | The catalog points to | The checker does |
+|---|---|---|
+| A Postgres / MySQL database | a read-only query per metric | reads the live value and compares |
+| A BI model (Power BI, Looker, Metabase) | a published measure | reads it and quotes the dashboard |
+| Spreadsheets or CSV exports | a file or sheet | reads the latest row |
+| A handbook or wiki | a document | answers "what does X mean?" with the source |
+
+Same engine, different company: you change the catalog, not the code. Two companies can define "revenue" differently and both are right, because each card quotes *its own* definition and source.
+
+> **Honest status:** this is the design, and the part that is not built yet. Today the catalog holds the numbers itself (that is what the browser beta and the terminal demo use, with fictional data). The connectors that read from a real database are [Phase 2 of the roadmap](docs/ROADMAP.md), and the first ones (CSV and a read-only SQL user) are open for contributors. If you would connect it to something else, tell us which in a [Discussion](../../discussions).
+
+Sketch of where a metric's value will come from (**design sketch, not implemented**):
+
+```json
+{
+  "id": "churn",
+  "label": "Churn rate",
+  "source": {
+    "type": "sql",
+    "connection_env": "ANALYTICS_RO_URL",
+    "query": "SELECT churn_pct FROM monthly_metrics WHERE month = :period"
+  }
+}
+```
+
+Credentials stay in environment variables, never in the catalog. See [the architecture](docs/ARCHITECTURE.md).
+
 ## Design principles
 
 These come from building a prototype and getting it wrong a few times.
