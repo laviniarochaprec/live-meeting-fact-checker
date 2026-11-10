@@ -1,12 +1,12 @@
-# Metric catalog (format, draft v0)
+# Metric dictionary (format, draft v0)
 
-The catalog is the heart of the project. It says *what a number means* and *where to read it*. The demo reads `sample_metrics.json`; this page describes that format and where it should go.
+The dictionary is the heart of the project. It says *what a number means* and *where to read it*. The demo reads `sample_metrics.json`; this page describes that format and where it should go.
 
 > All example data is fictional.
 
-## Why a catalog
+## Why a dictionary
 
-"Revenue" can mean three things in three dashboards. A checker that does not know *which* one it is quoting will eventually flag a correct number as wrong. The catalog records the definition once, with an owner, so the checker can quote it and so people can argue about it in one place.
+"Revenue" can mean three things in three dashboards. A checker that does not know *which* one it is quoting will eventually flag a correct number as wrong. The dictionary records the definition once, with an owner, so the checker can quote it and so people can argue about it in one place.
 
 ## A metric
 
@@ -53,17 +53,17 @@ Definitions that are not metrics ("qualified lead", "MRR") live next to the metr
 {"terms": ["qualified lead"], "answer": "A signup that finished onboarding...", "source": "Handbook, section 2"}
 ```
 
-## Validating a catalog
+## Validating a dictionary
 
 ```bash
-python validate_catalog.py path/to/catalog.json
+python validate_dictionary.py path/to/dictionary.json
 ```
 
-It checks that ids are unique, that **no alias is shared by two metrics** (the checker could not tell them apart), that units, aggregations, statuses and tolerances are valid, and that value keys look like `2026-03`. A catalog that passes is well-formed, not correct. The sample catalog is validated on every push.
+It checks that ids are unique, that **no alias is shared by two metrics** (the checker could not tell them apart), that units, aggregations, statuses and tolerances are valid, and that value keys look like `2026-03`. A dictionary that passes is well-formed, not correct. The sample dictionary is validated on every push.
 
 ## Where this is going
 
-- A JSON Schema so editors can validate a catalog as you type. 🙋
+- A JSON Schema so editors can validate a dictionary as you type. 🙋
 - `slices` (team, region, product) so "revenue for EMEA in March" is checkable.
 - `reviewed_on` enforced, so a stale definition shows up as a warning.
 - A connector per metric instead of inline `values`. See the [roadmap](ROADMAP.md), Phase 2.

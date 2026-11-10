@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Validate a metric catalog (see docs/METRIC_CATALOG.md). Standard library only.
+"""Validate a metric dictionary (see docs/METRIC_DICTIONARY.md). Standard library only.
 
-  python validate_catalog.py                      # checks sample_metrics.json
-  python validate_catalog.py path/to/catalog.json
+  python validate_dictionary.py                      # checks sample_metrics.json
+  python validate_dictionary.py path/to/dictionary.json
 
 Exit code 0 = valid, 1 = problems found (printed one per line).
-A catalog that passes is not *correct*, only well-formed: checking that the numbers are right is still your job.
+A dictionary that passes is not *correct*, only well-formed: checking that the numbers are right is still your job.
 """
 import json
 import re
@@ -25,7 +25,7 @@ def _text(v):
 
 
 def validate(data):
-    """Returns a list of problems (empty if the catalog is well-formed)."""
+    """Returns a list of problems (empty if the dictionary is well-formed)."""
     errs = []
     if not _text(data.get("company")):
         errs.append("top level: 'company' is missing")

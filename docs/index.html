@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Live Meeting Fact-Checker (beta)</title>
-<meta name="description" content="Beta: checks numbers said in a meeting against your metric catalog, in your browser. Sample data is fictional.">
+<meta name="description" content="Beta: checks numbers said in a meeting against your metric dictionary, in your browser. Sample data is fictional.">
 <style>
   :root {
     --bg: #fafaf9; --panel: #ffffff; --text: #1c1b1a; --muted: #6b6762; --line: #e4e1dc;
@@ -62,18 +62,18 @@
 <body>
 <main>
   <h1>Live Meeting Fact-Checker <span class="beta">BETA</span></h1>
-  <p class="muted" style="margin:0">Catches wrong numbers as they are said, and answers quick questions, using <em>your</em> metric catalog.</p>
-  <p class="muted" style="margin:.5rem 0 0">Made to adapt to any company: each one describes its metrics in a catalog and points them at its own database. <strong>Connectors to real databases are not built yet</strong>; in this beta the catalog holds the (fictional) numbers itself. <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker#made-to-plug-into-your-companys-data">How it will connect</a>.</p>
+  <p class="muted" style="margin:0">Catches wrong numbers as they are said, and answers quick questions, using <em>your</em> metric dictionary.</p>
+  <p class="muted" style="margin:.5rem 0 0">Made to adapt to any company: each one describes its metrics in a dictionary and points them at its own database. <strong>Connectors to real databases are not built yet</strong>; in this beta the dictionary holds the (fictional) numbers itself. <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker#made-to-plug-into-your-companys-data">How it will connect</a>.</p>
   <p class="notice" role="note">
     <strong>All sample data is fictional</strong> ("Acme Cloud" does not exist).
-    Everything runs in your browser: your catalog, sentences and audio are <strong>never uploaded</strong>.
+    Everything runs in your browser: your dictionary, sentences and audio are <strong>never uploaded</strong>.
     The only download is the speech model (40 to 80 MB), once, from a public CDN, if you use the Live tab.
   </p>
 
   <nav role="tablist" aria-label="Sections">
     <button role="tab" id="tab-try" aria-selected="true" aria-controls="try">Try it</button>
     <button role="tab" id="tab-live" aria-selected="false" aria-controls="live">Live (audio)</button>
-    <button role="tab" id="tab-cat" aria-selected="false" aria-controls="catalog">Catalog</button>
+    <button role="tab" id="tab-cat" aria-selected="false" aria-controls="dictionary">Dictionary</button>
   </nav>
 
   <!-- TRY IT -->
@@ -126,18 +126,18 @@
     <div id="liveLines" class="muted"></div>
   </section>
 
-  <!-- CATALOG -->
-  <section id="catalog" role="tabpanel" aria-labelledby="tab-cat" hidden>
-    <h2>Your metric catalog</h2>
+  <!-- DICTIONARY -->
+  <section id="dictionary" role="tabpanel" aria-labelledby="tab-cat" hidden>
+    <h2>Your metric dictionary</h2>
     <p class="muted">This is what the checker knows. Replace the fictional metrics with yours (it stays in this browser tab), then go back to <em>Try it</em>.
-      Format: <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker/blob/main/docs/METRIC_CATALOG.md">metric catalog spec</a>.</p>
-    <textarea id="catalogJson" style="min-height:380px" aria-label="Catalog JSON" spellcheck="false"></textarea>
+      Format: <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker/blob/main/docs/METRIC_DICTIONARY.md">metric dictionary spec</a>.</p>
+    <textarea id="dictionaryJson" style="min-height:380px" aria-label="Dictionary JSON" spellcheck="false"></textarea>
     <div class="row">
-      <button class="primary" id="applyCatalog">Validate and use</button>
-      <button class="secondary" id="resetCatalog">Reset to the fictional sample</button>
-      <button class="secondary" id="downloadCatalog">Download</button>
+      <button class="primary" id="applyDictionary">Validate and use</button>
+      <button class="secondary" id="resetDictionary">Reset to the fictional sample</button>
+      <button class="secondary" id="downloadDictionary">Download</button>
     </div>
-    <div id="catalogMsg" class="errors" role="alert"></div>
+    <div id="dictionaryMsg" class="errors" role="alert"></div>
   </section>
 
   <footer>

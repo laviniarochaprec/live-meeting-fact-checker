@@ -3,8 +3,8 @@
 
 It shows the core behavior from the README, without audio and without a database:
 
-  * a number is CHECKED against a metric catalog and only flagged when it is off,
-  * a quick factual QUESTION is answered from the catalog,
+  * a number is CHECKED against a metric dictionary and only flagged when it is off,
+  * a quick factual QUESTION is answered from the dictionary,
   * a DEFINITION is answered from a glossary,
   * when it is not sure (unknown metric, no period, several numbers...) it stays SILENT.
 
@@ -129,7 +129,7 @@ def period_label(key):
 
 def value_for(met, key):
     """The metric's value for a month ('2026-03') or a quarter ('2026-Q1'); None if it cannot be computed.
-    A quarter needs all three months and an 'aggregation' (sum, avg or last) in the catalog."""
+    A quarter needs all three months and an 'aggregation' (sum, avg or last) in the dictionary."""
     if "-Q" not in key:
         return met["values"].get(key)
     agg = met.get("aggregation")

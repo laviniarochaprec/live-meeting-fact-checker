@@ -6,7 +6,7 @@ Thank you for looking. This project is early, so the most valuable contributions
 
 1. **Break the demo.** Run `python demo.py --verbose "..."` with sentences from your own meetings. If it flags a correct number, or stays quiet where it should speak, open an Issue with the sentence and what you expected.
 2. **Tell us about your meetings.** Which numbers get said wrong, who corrects them, and where is the real number? Post in Discussions.
-3. **Review the design.** Read [the vision](docs/VISION.md), [the catalog spec](docs/METRIC_CATALOG.md) and [the architecture](docs/ARCHITECTURE.md). Tell us what you would change.
+3. **Review the design.** Read [the vision](docs/VISION.md), [the dictionary spec](docs/METRIC_DICTIONARY.md) and [the architecture](docs/ARCHITECTURE.md). Tell us what you would change.
 
 ## If you want to write code
 

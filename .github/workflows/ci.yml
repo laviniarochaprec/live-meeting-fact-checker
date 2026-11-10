@@ -24,7 +24,7 @@ jobs:
           node-version: 20
       - name: Run the JavaScript engine tests
         run: node --test tests/engine.test.mjs
-      - name: Validate the sample catalog
-        run: python validate_catalog.py
+      - name: Validate the sample dictionary
+        run: python validate_dictionary.py
       - name: Demo smoke test
         run: python demo.py --transcript examples/meeting.txt

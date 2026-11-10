@@ -19,11 +19,11 @@ Jo: NPS in March was 60.
 Sam: What was NPS in March?
 Alex: Revenue in Q1 was $5.2M.`;
 
-let data = null; // the catalog in use
+let data = null; // the dictionary in use
 
 // ------------------------------------------------------------------ tabs
 const TABS = ["try", "live", "cat"];
-const PANELS = { try: "try", live: "live", cat: "catalog" };
+const PANELS = { try: "try", live: "live", cat: "dictionary" };
 function showTab(name) {
   for (const t of TABS) {
     $(`#tab-${t}`).setAttribute("aria-selected", String(t === name));
@@ -116,19 +116,19 @@ $("#sentence").addEventListener("keydown", (e) => { if (e.key === "Enter") runSe
 $("#runTranscript").addEventListener("click", runTranscript);
 $("#loadExample").addEventListener("click", () => { $("#transcript").value = EXAMPLE; runTranscript(); });
 
-// ------------------------------------------------------------------ catalog
-function showCatalog() { $("#catalogJson").value = JSON.stringify(data, null, 2); }
+// ------------------------------------------------------------------ dictionary
+function showDictionary() { $("#dictionaryJson").value = JSON.stringify(data, null, 2); }
 
-function applyCatalog() {
-  const msg = $("#catalogMsg");
+function applyDictionary() {
+  const msg = $("#dictionaryMsg");
   let parsed;
-  try { parsed = JSON.parse($("#catalogJson").value); } catch (e) { msg.textContent = `Not valid JSON: ${e.message}`; return; }
-  const errs = FC.validateCatalog(parsed);
+  try { parsed = JSON.parse($("#dictionaryJson").value); } catch (e) { msg.textContent = `Not valid JSON: ${e.message}`; return; }
+  const errs = FC.validateDictionary(parsed);
   if (errs.length) { msg.textContent = errs.map((e) => `- ${e}`).join("\n"); return; }
   data = parsed;
   msg.textContent = "";
   msg.style.color = "var(--ok)";
-  msg.textContent = "Catalog is valid and in use. Go to “Try it”.";
+  msg.textContent = "Dictionary is valid and in use. Go to “Try it”.";
   setTimeout(() => { msg.style.color = ""; }, 4000);
 }
 
@@ -138,11 +138,11 @@ async function loadSample() {
   return r.json();
 }
 
-$("#applyCatalog").addEventListener("click", applyCatalog);
-$("#resetCatalog").addEventListener("click", async () => { data = await loadSample(); showCatalog(); $("#catalogMsg").textContent = ""; });
-$("#downloadCatalog").addEventListener("click", () => {
+$("#applyDictionary").addEventListener("click", applyDictionary);
+$("#resetDictionary").addEventListener("click", async () => { data = await loadSample(); showDictionary(); $("#dictionaryMsg").textContent = ""; });
+$("#downloadDictionary").addEventListener("click", () => {
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([$("#catalogJson").value], { type: "application/json" }));
+  a.href = URL.createObjectURL(new Blob([$("#dictionaryJson").value], { type: "application/json" }));
   a.download = "my_metrics.json";
   a.click();
   URL.revokeObjectURL(a.href);
@@ -336,11 +336,11 @@ $("#stopLive").addEventListener("click", stopLive);
   $("#transcript").value = EXAMPLE;
   try {
     data = await loadSample();
-    showCatalog();
+    showDictionary();
   } catch (e) {
     $("#out").textContent = location.protocol === "file:"
       ? "Open this page through a web server, not as a file. In this folder run: python -m http.server 8000, then visit http://localhost:8000"
-      : `Could not load the sample catalog (${e.message}).`;
+      : `Could not load the sample dictionary (${e.message}).`;
     $("#checkOne").disabled = $("#runTranscript").disabled = true;
   }
 })();

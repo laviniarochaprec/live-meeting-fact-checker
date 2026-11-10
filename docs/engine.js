@@ -106,7 +106,7 @@
   }
 
   /** Value for a month ("2026-03") or quarter ("2026-Q1"); null when it cannot be computed.
-   *  A quarter needs all three months and an "aggregation" (sum, avg or last) in the catalog. */
+   *  A quarter needs all three months and an "aggregation" (sum, avg or last) in the dictionary. */
   function valueFor(met, key) {
     if (!key.includes("-Q")) return key in met.values ? met.values[key] : null;
     const [year, q] = key.split("-Q");
@@ -204,14 +204,14 @@
     return t.trim();
   }
 
-  // ------------------------------------------------------------ catalog validation
+  // ------------------------------------------------------------ dictionary validation
   const UNITS = ["usd", "percent", "count"];
   const AGGREGATIONS = ["sum", "avg", "last"];
   const STATUSES = ["validated", "answer-only"];
   const isText = (v) => typeof v === "string" && v.trim() !== "";
 
-  /** List of problems (empty if well-formed). Mirrors validate_catalog.py. */
-  function validateCatalog(data) {
+  /** List of problems (empty if well-formed). Mirrors validate_dictionary.py. */
+  function validateDictionary(data) {
     const errs = [];
     if (!isText(data.company)) errs.push("top level: 'company' is missing");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data.as_of || ""))) errs.push("top level: 'as_of' must look like 2026-06-30");
@@ -263,5 +263,5 @@
     return errs;
   }
 
-  return { check, numbers, findPeriod, findMetric, valueFor, fmt, periodLabel, splitSentences, parseTranscript, cleanTranscript, validateCatalog };
+  return { check, numbers, findPeriod, findMetric, valueFor, fmt, periodLabel, splitSentences, parseTranscript, cleanTranscript, validateDictionary };
 });

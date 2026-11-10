@@ -11,7 +11,7 @@ Thank you for testing. This takes about 10 minutes and needs no account and no i
 
 ## Privacy, in plain words
 
-- Your sentences, your catalog and your **audio never leave your browser**. There is no server.
+- Your sentences, your dictionary and your **audio never leave your browser**. There is no server.
 - The only download is the speech model (about 40 MB) the first time you use the Live tab, from a public CDN. Your browser keeps it afterwards.
 - Nothing is saved when you close the tab.
 
@@ -36,9 +36,9 @@ Press **Load the example meeting**. You should get 12 cards: 4 different, 3 conf
 
 ## Test 3: your own metrics (the important one)
 
-Open the **Catalog** tab and replace two or three metrics with ones from your world (**invented numbers**, please). Press **Validate and use**, go back to *Try it*, and say sentences you actually hear in meetings.
+Open the **Dictionary** tab and replace two or three metrics with ones from your world (**invented numbers**, please). Press **Validate and use**, go back to *Try it*, and say sentences you actually hear in meetings.
 
-- Did the catalog format let you describe your metric? What was missing?
+- Did the dictionary format let you describe your metric? What was missing?
 - Did a sentence from your real meetings get ignored that you wish it had caught?
 - Did it flag something that was actually fine?
 
@@ -68,7 +68,7 @@ Screenshots are welcome, as long as they show only the fictional data.
 
 - **English only** for now (speech and number parsing). See the open issue about other languages.
 - The Live tab uses a small model that runs on your CPU, so it is slower and less accurate than a desktop setup. The first time, it downloads the model (about 80 MB for the recommended `base.en`).
-- **Speech models mishear domain words.** In our own test, "churn" came out as "chirni" and "revenue" as "revanui" with the small model. If a word of yours is misheard, add what you saw to `heard_as` in the catalog ([spec](METRIC_CATALOG.md)) and tell us which words kept failing.
+- **Speech models mishear domain words.** In our own test, "churn" came out as "chirni" and "revenue" as "revanui" with the small model. If a word of yours is misheard, add what you saw to `heard_as` in the dictionary ([spec](METRIC_DICTIONARY.md)) and tell us which words kept failing.
 - The page can freeze for a moment while it transcribes (the model runs on the page itself, not in a background worker yet).
 - The model sometimes loops or stutters ("what, what, what"). The page collapses stutters and drops loops.
 - It hears **one tab and one microphone**. It does not identify who is speaking beyond "You" and "Meeting".

@@ -1,4 +1,4 @@
-"""The browser app serves its own copy of the sample catalog (GitHub Pages only publishes docs/).
+"""The browser app serves its own copy of the sample dictionary (GitHub Pages only publishes docs/).
 This test makes sure the two copies never drift apart."""
 import unittest
 from pathlib import Path
@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class WebCopy(unittest.TestCase):
-    def test_docs_sample_catalog_matches_the_root_one(self):
+    def test_docs_sample_dictionary_matches_the_root_one(self):
         root = (ROOT / "sample_metrics.json").read_bytes().replace(b"\r\n", b"\n")
         web = (ROOT / "docs" / "sample_metrics.json").read_bytes().replace(b"\r\n", b"\n")
         self.assertEqual(root, web, "copy sample_metrics.json to docs/sample_metrics.json")

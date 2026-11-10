@@ -4,19 +4,19 @@ Honest status: **Phase 0 is done. Everything else is open.** Items marked 🙋 a
 
 ## Phase 0: prove the decision logic ✅
 
-- [x] Check a spoken number against a catalog (tolerance, relative or absolute)
+- [x] Check a spoken number against a dictionary (tolerance, relative or absolute)
 - [x] Answer factual questions and definitions
 - [x] Stay quiet when unsure, and say why in `--verbose`
 - [x] Runnable demo with fictional data, no dependencies
 
-## Phase 1: make the catalog real
+## Phase 1: make the dictionary real
 
 Goal: anyone can describe their own metrics and trust the result.
 
 - [x] Quarters with per-metric aggregation (sum / average / last)
 - [ ] Years and "year to date" 🙋
-- [x] Catalog validator (`validate_catalog.py`), run on every push
-- [ ] JSON Schema for the catalog, so editors can validate as you type ([spec](METRIC_CATALOG.md)) 🙋
+- [x] Dictionary validator (`validate_dictionary.py`), run on every push
+- [ ] JSON Schema for the dictionary, so editors can validate as you type ([spec](METRIC_DICTIONARY.md)) 🙋
 - [x] `validated` vs `answer-only` status per metric, enforced by the checker
 - [x] Cards as plain data, with `--json` output a panel can read
 - [ ] Slices: "revenue for the EMEA team in March" (metric + period + slice)
@@ -56,14 +56,14 @@ Goal: other participants see the cards without installing anything.
 ## Phase 5: trust at scale
 
 - [ ] Precision and noise metrics measured per meeting (the success criteria in the [vision](VISION.md))
-- [ ] Catalog review workflow: owners, review dates, change history
+- [ ] Dictionary review workflow: owners, review dates, change history
 - [ ] Multi-language meetings
 - [ ] Pilot with 3 teams in different functions (sales, finance, ops)
 
 ## How priorities are decided
 
 1. Anything that **reduces wrong alerts** comes first.
-2. Then anything that **widens what can be checked** (catalog, slices, connectors).
+2. Then anything that **widens what can be checked** (dictionary, slices, connectors).
 3. Audio and UI polish come after the logic is trusted, because a slick panel with wrong cards is worse than a plain one with right cards.
 
 Suggest a change in [Discussions](../../../discussions). Concrete tasks live in [Issues](../../../issues).

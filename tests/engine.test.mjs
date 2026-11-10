@@ -46,7 +46,7 @@ test("stays quiet when unsure", () => {
   quiet("Revenue in March 2026 was strong.");
 });
 
-test("quarters use the catalog's aggregation", () => {
+test("quarters use the dictionary's aggregation", () => {
   assert.equal(run("Revenue in Q1 was $5.2M.").kind, "ok");
   assert.match(text(run("What was churn in Q2?")), /4\.0%/);
   assert.equal(run("Active customers in Q1 were 12,310.").kind, "ok");
@@ -93,12 +93,12 @@ test("transcript helpers", () => {
   ]);
 });
 
-test("catalog validation", () => {
-  assert.deepEqual(FC.validateCatalog(DATA), []);
+test("dictionary validation", () => {
+  assert.deepEqual(FC.validateDictionary(DATA), []);
   const bad = (fn) => {
     const d = JSON.parse(JSON.stringify(DATA));
     fn(d);
-    return FC.validateCatalog(d);
+    return FC.validateDictionary(d);
   };
   assert.ok(bad((d) => (d.metrics[1].id = d.metrics[0].id)).some((e) => /already used/.test(e)));
   assert.ok(bad((d) => d.metrics[1].names.push("revenue")).some((e) => /alias 'revenue'/.test(e)));
@@ -117,7 +117,7 @@ test("heard_as is validated and may not collide with another metric", () => {
   const bad = (fn) => {
     const d = JSON.parse(JSON.stringify(DATA));
     fn(d);
-    return FC.validateCatalog(d);
+    return FC.validateDictionary(d);
   };
   assert.ok(bad((d) => (d.metrics[0].heard_as = "revenue")).some((e) => /'heard_as' must be a list/.test(e)));
   assert.ok(bad((d) => (d.metrics[0].heard_as = ["chirn"])).some((e) => /heard_as 'chirn'/.test(e)));

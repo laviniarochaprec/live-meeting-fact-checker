@@ -23,7 +23,7 @@ Draft. The demo implements only the middle box (decision logic). The rest is the
                         │          │
              ┌──────────▼──┐   ┌───▼────────────┐
              │ Metric       │   │ Docs / glossary │
-             │ catalog +    │   │ search          │
+             │ dictionary +    │   │ search          │
              │ connectors   │   │ (+ optional     │
              │ (read-only)  │   │  local LLM to   │
              └──────┬───────┘   │  phrase answers)│
@@ -69,7 +69,7 @@ Draft. The demo implements only the middle box (decision logic). The rest is the
 | Data exfiltration through the panel | The panel shows company numbers | Link is a random room id, rooms expire, no listing, put it behind your network or SSO |
 | Heavy queries hurting the database | A listener should never slow production | Read replica, read-only user, timeouts, caching |
 | Prompt injection through the transcript | Someone says "ignore previous instructions" | The LLM only phrases an answer from retrieved text and never picks numbers or runs queries |
-| Credentials leaking | Connectors hold secrets | Secrets in environment variables, never in the catalog or the repo |
+| Credentials leaking | Connectors hold secrets | Secrets in environment variables, never in the dictionary or the repo |
 
 ## What we deliberately did not decide yet
 

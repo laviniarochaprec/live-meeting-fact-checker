@@ -1,4 +1,4 @@
-"""Tests for the catalog validator."""
+"""Tests for the dictionary validator."""
 import copy
 import json
 import sys
@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-import validate_catalog  # noqa: E402
+import validate_dictionary  # noqa: E402
 
 GOOD = json.loads((ROOT / "sample_metrics.json").read_text(encoding="utf-8"))
 
@@ -15,12 +15,12 @@ GOOD = json.loads((ROOT / "sample_metrics.json").read_text(encoding="utf-8"))
 def broken(change):
     data = copy.deepcopy(GOOD)
     change(data)
-    return validate_catalog.validate(data)
+    return validate_dictionary.validate(data)
 
 
 class Validator(unittest.TestCase):
-    def test_the_sample_catalog_is_valid(self):
-        self.assertEqual(validate_catalog.validate(GOOD), [])
+    def test_the_sample_dictionary_is_valid(self):
+        self.assertEqual(validate_dictionary.validate(GOOD), [])
 
     def test_duplicate_ids(self):
         errs = broken(lambda d: d["metrics"][1].update(id=d["metrics"][0]["id"]))

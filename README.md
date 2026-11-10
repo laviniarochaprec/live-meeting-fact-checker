@@ -47,22 +47,22 @@ Three behaviors:
 2. **Answer** quick factual questions ("what was revenue in Q2?", "who owns this metric?").
 3. **Explain** definitions and rules from your own documents ("what is a qualified lead?").
 
-It is connected to **each company's own database and docs**, so the same tool adapts to any business by changing the metric catalog, not the code.
+It is connected to **each company's own database and docs**, so the same tool adapts to any business by changing the metric dictionary, not the code.
 
 ## Made to plug into *your* company's data
 
-The tool itself knows nothing about any business. What it knows comes from a **metric catalog** that each company writes: what a metric means, who owns it, how close a spoken number must be to count as right, and **where the real value lives**.
+The tool itself knows nothing about any business. What it knows comes from a **metric dictionary** that each company writes: what a metric means, who owns it, how close a spoken number must be to count as right, and **where the real value lives**.
 
-| Your company has | The catalog points to | The checker does |
+| Your company has | The dictionary points to | The checker does |
 |---|---|---|
 | A Postgres / MySQL database | a read-only query per metric | reads the live value and compares |
 | A BI model (Power BI, Looker, Metabase) | a published measure | reads it and quotes the dashboard |
 | Spreadsheets or CSV exports | a file or sheet | reads the latest row |
 | A handbook or wiki | a document | answers "what does X mean?" with the source |
 
-Same engine, different company: you change the catalog, not the code. Two companies can define "revenue" differently and both are right, because each card quotes *its own* definition and source.
+Same engine, different company: you change the dictionary, not the code. Two companies can define "revenue" differently and both are right, because each card quotes *its own* definition and source.
 
-> **Honest status:** this is the design, and the part that is not built yet. Today the catalog holds the numbers itself (that is what the browser beta and the terminal demo use, with fictional data). The connectors that read from a real database are [Phase 2 of the roadmap](docs/ROADMAP.md), and the first ones (CSV and a read-only SQL user) are open for contributors. If you would connect it to something else, tell us which in a [Discussion](../../discussions).
+> **Honest status:** this is the design, and the part that is not built yet. Today the dictionary holds the numbers itself (that is what the browser beta and the terminal demo use, with fictional data). The connectors that read from a real database are [Phase 2 of the roadmap](docs/ROADMAP.md), and the first ones (CSV and a read-only SQL user) are open for contributors. If you would connect it to something else, tell us which in a [Discussion](../../discussions).
 
 Sketch of where a metric's value will come from (**design sketch, not implemented**):
 
@@ -78,7 +78,7 @@ Sketch of where a metric's value will come from (**design sketch, not implemente
 }
 ```
 
-Credentials stay in environment variables, never in the catalog. See [the architecture](docs/ARCHITECTURE.md).
+Credentials stay in environment variables, never in the dictionary. See [the architecture](docs/ARCHITECTURE.md).
 
 ## Design principles
 
@@ -86,7 +86,7 @@ These come from building a prototype and getting it wrong a few times.
 
 1. **Silence beats a wrong correction.** If it is not sure of the metric, the period, the slice, or the definition, it says nothing. A confident wrong alert destroys trust in one meeting.
 2. **Numbers are checked by code, not by a language model.** Claim extraction and comparison are deterministic (with tolerances for "about 40 million"). A model may *explain*, never *decide* what the right number is.
-3. **Every number has a validated definition.** "Revenue" or "closed deals" can mean three things in three dashboards. The metric catalog records the definition, the query, and who validated it. No validation, no correction (answer-only at most).
+3. **Every number has a validated definition.** "Revenue" or "closed deals" can mean three things in three dashboards. The metric dictionary records the definition, the query, and who validated it. No validation, no correction (answer-only at most).
 4. **Read-only, least privilege.** It reads from a replica or a dedicated read-only user. It never writes to your systems.
 5. **Always show the source and the freshness.** Every card says where the number came from and when it was read.
 6. **Cheap by default.** Speech-to-text and the rules engine can run locally or on a small server. A local small LLM is optional and only for explanations. No per-minute API bill is required.
@@ -104,7 +104,7 @@ These come from building a prototype and getting it wrong a few times.
  Claim extractor  (metric · period · slice · number)      Question router
         │                                                       │
         ▼                                                       ▼
- Metric catalog ──► read-only queries ──► compare      Docs / glossary search
+ Metric dictionary ──► read-only queries ──► compare      Docs / glossary search
  (definitions,        against your DB or BI            (+ optional local LLM
   validated)                                             to phrase the answer)
         │                                                       │
@@ -114,7 +114,7 @@ These come from building a prototype and getting it wrong a few times.
 
 - **Capture:** system audio loopback plus microphone, cut into utterances on silence.
 - **Transcription:** a local Whisper-class model, with a domain vocabulary prompt (metric names, team names, people).
-- **Metric catalog:** a versioned file per metric: names and aliases, the query, the definition, the owner, the tolerance, and whether it may *correct* or only *answer*.
+- **Metric dictionary:** a versioned file per metric: names and aliases, the query, the definition, the owner, the tolerance, and whether it may *correct* or only *answer*.
 - **Panel:** a small web page that any participant can open. Only the person running the listener needs the heavy parts.
 
 ## What a prototype taught us
@@ -133,10 +133,10 @@ A small app that runs **entirely in your browser**: nothing to install, no accou
 
 - **Try it:** type a sentence and see the card.
 - **Paste a meeting:** a transcript of `Name: sentence` lines, checked all at once.
-- **Catalog:** replace the fictional metrics with your own (invented numbers, please) and see what breaks.
+- **Dictionary:** replace the fictional metrics with your own (invented numbers, please) and see what breaks.
 - **Live (audio):** listens to your microphone and/or a meeting **tab**, transcribes with a local speech model and checks what it hears. Chrome or Edge.
 
-> ⚠️ **All sample data is fictional** ("Acme Cloud"). Your sentences, catalog and audio **never leave your browser**. The only download is the speech model (about 40 MB), once, from a public CDN.
+> ⚠️ **All sample data is fictional** ("Acme Cloud"). Your sentences, dictionary and audio **never leave your browser**. The only download is the speech model (about 40 MB), once, from a public CDN.
 
 Run it locally (needs Python only to serve the files):
 
@@ -170,7 +170,7 @@ python demo.py --json "Churn in March was 6%"              # the card as JSON, f
 python demo.py                                             # type your own sentences
 
 python -m unittest discover -s tests                       # run the tests (stdlib only)
-python validate_catalog.py                                 # validate a metric catalog
+python validate_dictionary.py                                 # validate a metric dictionary
 ```
 
 (On Windows use `py demo.py`. In a shell, escape the `$` or use single quotes.)
@@ -188,9 +188,9 @@ Sam: I thought churn was higher, maybe 6% in March.
 
 **It stays quiet on purpose** when it is not sure: no known metric, no period ("Revenue was $2M."), a period with no data, two metrics in one sentence, or several numbers. Run with `--verbose` to see the reason each time. That silence is the most important behavior to get right.
 
-**A metric that is not validated never corrects anyone.** Mark it `"status": "answer-only"` in the catalog (the sample has one, `NPS`) and it will still answer questions, with a "not validated yet" note, but it will not flag what people say. A wrong correction costs more trust than a missed one.
+**A metric that is not validated never corrects anyone.** Mark it `"status": "answer-only"` in the dictionary (the sample has one, `NPS`) and it will still answer questions, with a "not validated yet" note, but it will not flag what people say. A wrong correction costs more trust than a missed one.
 
-**Make it yours:** edit `sample_metrics.json` (metrics, aliases, tolerances, definitions, glossary) and see what breaks. That file is the "metric catalog" from the design above. Tell us what you had to change.
+**Make it yours:** edit `sample_metrics.json` (metrics, aliases, tolerances, definitions, glossary) and see what breaks. That file is the "metric dictionary" from the design above. Tell us what you had to change.
 
 **What the demo is not:** it is not the product. Real audio, speaker identification, real data connectors and a shared panel are the open pieces below.
 
@@ -198,7 +198,7 @@ Sam: I thought churn was higher, maybe 6% in March.
 
 - 🧭 [Vision](docs/VISION.md): why this, who it is for, what winning looks like
 - 🗺️ [Roadmap](docs/ROADMAP.md): phases and what is open (look for 🙋)
-- 📐 [Metric catalog spec](docs/METRIC_CATALOG.md): the format everything depends on
+- 📐 [Metric dictionary spec](docs/METRIC_DICTIONARY.md): the format everything depends on
 - 🏗️ [Architecture](docs/ARCHITECTURE.md): components, privacy model, threats
 - 🤝 [Contributing](CONTRIBUTING.md): the easiest ways to help need no code
 
@@ -206,7 +206,7 @@ Sam: I thought churn was higher, maybe 6% in March.
 
 - Which **meetings** would benefit most: sales reviews, finance check-ins, operations stand-ups, board meetings, incident calls?
 - Which **data sources** matter first: SQL warehouse, a BI tool, spreadsheets, a CRM, a wiki?
-- How do you keep a **metric catalog** alive without it becoming another stale document?
+- How do you keep a **metric dictionary** alive without it becoming another stale document?
 - What is the right **UX for a correction** so it informs without embarrassing anyone?
 - How should **consent** work in a call with a mix of people and companies?
 - How do you handle **multiple languages** in the same meeting?
@@ -217,7 +217,7 @@ Sam: I thought churn was higher, maybe 6% in March.
 
 - 💬 **Share an idea or a use case** in [Discussions](../../discussions).
 - 🐛 **Point out a flaw in the design** by opening an [Issue](../../issues).
-- 🔧 **Want to build a piece?** (audio capture, a connector for your database, a panel, a metric-catalog format.) Say so in a Discussion and we will sketch the interface together.
+- 🔧 **Want to build a piece?** (audio capture, a connector for your database, a panel, a metric-dictionary format.) Say so in a Discussion and we will sketch the interface together.
 
 Comments in **English or Portuguese** are welcome.
 
