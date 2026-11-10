@@ -58,6 +58,14 @@ class Validator(unittest.TestCase):
         errs = broken(lambda d: d["glossary"][0].update(terms=[]))
         self.assertTrue(any("glossary entry #1" in e for e in errs))
 
+    def test_heard_as_must_be_a_list_of_strings(self):
+        errs = broken(lambda d: d["metrics"][0].update(heard_as="revenue"))
+        self.assertTrue(any("'heard_as' must be a list" in e for e in errs))
+
+    def test_heard_as_may_not_collide_with_another_metric(self):
+        errs = broken(lambda d: d["metrics"][0].update(heard_as=["chirn"]))
+        self.assertTrue(any("heard_as 'chirn'" in e for e in errs))
+
 
 if __name__ == "__main__":
     unittest.main()

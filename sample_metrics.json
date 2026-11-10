@@ -19,6 +19,7 @@
       "id": "churn",
       "label": "Churn rate",
       "names": ["churn", "churn rate"],
+      "heard_as": ["chirn", "chirni", "cheerney"],
       "unit": "percent",
       "aggregation": "avg",
       "tolerance": {"type": "absolute", "value": 0.5},

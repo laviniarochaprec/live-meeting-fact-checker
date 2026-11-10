@@ -73,7 +73,7 @@
   function findMetric(text, metrics) {
     const hits = [];
     for (const met of metrics) {
-      for (const name of met.names) {
+      for (const name of met.names.concat(met.heard_as || [])) {
         for (const m of text.matchAll(new RegExp(`\\b${esc(name)}s?\\b`, "gi"))) {
           hits.push({ len: name.length, a: m.index, b: m.index + m[0].length, met });
         }
@@ -195,6 +195,15 @@
     return out;
   }
 
+  /** Speech models sometimes loop ("last day, last day, ...") or stutter ("what, what, what").
+   *  Collapse stutters; return "" for a loop. */
+  function cleanTranscript(text) {
+    const t = text.replace(/\b([\w']+)([,.\s]+\1\b){2,}/gi, "$1");
+    const words = t.toLowerCase().match(/[\w']+/g) || [];
+    if (words.length >= 8 && new Set(words).size / words.length < 0.4) return "";
+    return t.trim();
+  }
+
   // ------------------------------------------------------------ catalog validation
   const UNITS = ["usd", "percent", "count"];
   const AGGREGATIONS = ["sum", "avg", "last"];
@@ -224,6 +233,12 @@
           else if (other !== m.id) errs.push(`${where}: alias '${n}' is also used by '${other}' (the checker could not tell them apart)`);
         }
       }
+      if ("heard_as" in m && (!Array.isArray(m.heard_as) || !m.heard_as.every(isText))) errs.push(`${where}: 'heard_as' must be a list of strings`);
+      for (const n of Array.isArray(m.heard_as) ? m.heard_as.filter(isText) : []) {
+        const other = aliases.get(n.toLowerCase());
+        if (other === undefined) aliases.set(n.toLowerCase(), m.id);
+        else if (other !== m.id) errs.push(`${where}: heard_as '${n}' is also used by '${other}'`);
+      }
       if (!UNITS.includes(m.unit)) errs.push(`${where}: 'unit' must be one of ${JSON.stringify(UNITS)}`);
       if ("aggregation" in m && !AGGREGATIONS.includes(m.aggregation)) errs.push(`${where}: 'aggregation' must be one of ${JSON.stringify(AGGREGATIONS)}`);
       if ("status" in m && !STATUSES.includes(m.status)) errs.push(`${where}: 'status' must be one of ${JSON.stringify(STATUSES)}`);
@@ -248,5 +263,5 @@
     return errs;
   }
 
-  return { check, numbers, findPeriod, findMetric, valueFor, fmt, periodLabel, splitSentences, parseTranscript, validateCatalog };
+  return { check, numbers, findPeriod, findMetric, valueFor, fmt, periodLabel, splitSentences, parseTranscript, cleanTranscript, validateCatalog };
 });

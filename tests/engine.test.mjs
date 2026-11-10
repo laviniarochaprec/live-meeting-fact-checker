@@ -106,3 +106,26 @@ test("catalog validation", () => {
   assert.ok(bad((d) => (d.metrics[0].tolerance = { type: "relative", value: 0 })).some((e) => /'tolerance'/.test(e)));
   assert.ok(bad((d) => (d.metrics[0].values.March = 1)).some((e) => /must look like 2026-03/.test(e)));
 });
+
+test("pronunciation aliases (heard_as) let a misheard word still match", () => {
+  const c = run("Chirni in March was 6%.");
+  assert.equal(c.kind, "diff");
+  assert.match(text(c), /Churn rate, March 2026: 4\.1%/);
+});
+
+test("heard_as is validated and may not collide with another metric", () => {
+  const bad = (fn) => {
+    const d = JSON.parse(JSON.stringify(DATA));
+    fn(d);
+    return FC.validateCatalog(d);
+  };
+  assert.ok(bad((d) => (d.metrics[0].heard_as = "revenue")).some((e) => /'heard_as' must be a list/.test(e)));
+  assert.ok(bad((d) => (d.metrics[0].heard_as = ["chirn"])).some((e) => /heard_as 'chirn'/.test(e)));
+});
+
+test("transcript cleaning collapses stutters and drops model loops", () => {
+  assert.equal(FC.cleanTranscript("What, what, what, what, what was revenue in March?"), "What was revenue in March?");
+  assert.equal(FC.cleanTranscript("Last day, ".repeat(40)), "");
+  assert.equal(FC.cleanTranscript("Churn in March was 6%."), "Churn in March was 6%.");
+  assert.equal(FC.cleanTranscript("That was very, very good."), "That was very, very good.");
+});

@@ -54,6 +54,14 @@ def validate(data):
                 if other != m.get("id"):
                     errs.append(f"{where}: alias '{n}' is also used by '{other}' (the checker could not tell them apart)")
 
+        heard = m.get("heard_as", [])
+        if not isinstance(heard, list) or not all(_text(h) for h in heard):
+            errs.append(f"{where}: 'heard_as' must be a list of strings")
+        else:
+            for h in heard:
+                other = aliases.setdefault(h.lower(), m.get("id"))
+                if other != m.get("id"):
+                    errs.append(f"{where}: heard_as '{h}' is also used by '{other}'")
         if m.get("unit") not in UNITS:
             errs.append(f"{where}: 'unit' must be one of {sorted(UNITS)}")
         if "aggregation" in m and m["aggregation"] not in AGGREGATIONS:

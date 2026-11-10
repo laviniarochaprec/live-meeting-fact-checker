@@ -97,7 +97,7 @@ def find_metric(text, metrics):
     """(metric, None) or (None, reason). Longest match wins; two different metrics = ambiguous."""
     hits = []
     for met in metrics:
-        for name in met["names"]:
+        for name in met["names"] + met.get("heard_as", []):
             for m in re.finditer(rf"\b{re.escape(name)}s?\b", text, re.I):
                 hits.append((len(name), m.span(), met))
     hits.sort(key=lambda h: -h[0])

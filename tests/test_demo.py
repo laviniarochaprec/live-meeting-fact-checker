@@ -157,5 +157,12 @@ class AnswerOnlyMetrics(unittest.TestCase):
         self.assertNotIn("Not validated", run("What was churn in March?"))
 
 
+class PronunciationAliases(unittest.TestCase):
+    def test_a_misheard_word_still_matches_through_heard_as(self):
+        out = run("Chirni in March was 6%.")
+        self.assertIn("DIFFERENT FROM SOURCE", out)
+        self.assertIn("Churn rate, March 2026: 4.1%", out)
+
+
 if __name__ == "__main__":
     unittest.main()
