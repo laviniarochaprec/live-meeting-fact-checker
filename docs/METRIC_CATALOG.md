@@ -31,6 +31,7 @@ The catalog is the heart of the project. It says *what a number means* and *wher
 | `id` | Stable identifier. Never reuse it for a different definition. |
 | `label` | How the card names the metric. |
 | `names` | Aliases people say out loud. Plurals are matched automatically. |
+| `heard_as` | *(optional)* How a speech model tends to **mishear** the name ("churn" heard as "chirni"). Treated like an alias. Add them as you discover them; they may not collide with another metric's names. |
 | `unit` | `usd`, `percent` or `count`. Decides which spoken number can be compared. |
 | `aggregation` | How months roll up into a quarter or year: `sum`, `avg` or `last`. If missing, quarters are not checked. |
 | `tolerance` | When a spoken number counts as "the same": `relative` (a fraction) or `absolute` (points for percentages). |
