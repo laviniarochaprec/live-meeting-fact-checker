@@ -37,9 +37,10 @@ Goal: replace the sample JSON with the company's own source of truth. Read-only,
 
 Goal: hear the meeting instead of typed sentences.
 
-- [ ] System-audio capture plus microphone, cut into utterances on silence
-- [ ] Local speech-to-text with a domain vocabulary prompt
-- [ ] Echo handling: gate the microphone while the meeting audio is playing
+- [x] **Browser beta:** microphone and/or a shared meeting tab, cut into utterances on silence, local speech model in the browser (no install, nothing uploaded)
+- [x] Echo handling: the microphone is ignored while the meeting tab is speaking
+- [ ] Desktop capture of system audio (not only a browser tab), for call apps that are not in a browser 🙋
+- [ ] Local speech-to-text with a domain vocabulary prompt (not available in the browser model today)
 - [ ] Speaker separation (who said it)
 - [ ] Latency budget and a benchmark you can run on your own laptop 🙋
 

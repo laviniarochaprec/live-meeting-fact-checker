@@ -2,7 +2,7 @@
 
 **An open idea: an assistant that listens to your meeting, catches wrong numbers as they are said, and answers questions on the spot, using your own company's data.**
 
-> Status: idea + design notes + a **tiny runnable demo** ([try it](#try-the-demo-in-30-seconds)). No audio and no database yet.
+> Status: idea + design notes + a **browser beta** you can [try now](#try-the-beta-in-your-browser) (including live audio) + a terminal demo. No database connectors yet.
 > **All data in this repo is fictional.** The company in the demo ("Acme Cloud") does not exist.
 > **We want your comments.** Open a [Discussion](../../discussions) or an [Issue](../../issues) and tell us what you would use it for, what would break it, and what you would build on top.
 
@@ -93,6 +93,27 @@ These come from building a prototype and getting it wrong a few times.
 - **Bigger model, slower panel.** A larger speech model was about three times slower on a laptop CPU for modest gains. Latency matters more than polish in a live meeting.
 - **Same name, different numbers.** The same metric split by team gave different values in two systems, because "team" was defined differently. The tool must know *which* definition it is quoting, and say so on the card.
 - **Do not trust one source for everything.** Some questions are answered by a database, some by a BI model, some by a document. Route by question type and label the source.
+
+## Try the beta in your browser
+
+A small app that runs **entirely in your browser**: nothing to install, no account, no server. It has four parts:
+
+- **Try it:** type a sentence and see the card.
+- **Paste a meeting:** a transcript of `Name: sentence` lines, checked all at once.
+- **Catalog:** replace the fictional metrics with your own (invented numbers, please) and see what breaks.
+- **Live (audio):** listens to your microphone and/or a meeting **tab**, transcribes with a local speech model and checks what it hears. Chrome or Edge.
+
+> ⚠️ **All sample data is fictional** ("Acme Cloud"). Your sentences, catalog and audio **never leave your browser**. The only download is the speech model (about 40 MB), once, from a public CDN.
+
+Run it locally (needs Python only to serve the files):
+
+```bash
+cd docs
+python -m http.server 8000
+# then open http://localhost:8000
+```
+
+**Beta testers:** the [testing guide](docs/BETA_TESTING.md) has four short tests (about 10 minutes) and tells you how to report what you find.
 
 ## Try the demo in 30 seconds
 
