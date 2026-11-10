@@ -96,6 +96,8 @@ These come from building a prototype and getting it wrong a few times.
 
 ## Try the beta in your browser
 
+**👉 https://laviniarochaprec.github.io/live-meeting-fact-checker/**
+
 A small app that runs **entirely in your browser**: nothing to install, no account, no server. It has four parts:
 
 - **Try it:** type a sentence and see the card.
