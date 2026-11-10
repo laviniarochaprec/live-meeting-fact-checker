@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Meeting Fact-Checker (beta)</title>
+<meta name="description" content="Beta: checks numbers said in a meeting against your metric catalog, in your browser. Sample data is fictional.">
+<style>
+  :root {
+    --bg: #fafaf9; --panel: #ffffff; --text: #1c1b1a; --muted: #6b6762; --line: #e4e1dc;
+    --accent: #1f5fbf; --diff: #b3411d; --diff-bg: #fdf0eb; --ok: #1e7a46; --ok-bg: #eef8f1;
+    --answer: #1f5fbf; --answer-bg: #eef4fd; --warn-bg: #fff7e0; --warn-line: #e8c96a;
+  }
+  :root:not([data-theme="light"]) { }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --panel: #1d1c1b; --text: #ecebe8; --muted: #a09b94; --line: #33312f;
+      --accent: #6ea4f0; --diff: #f0906c; --diff-bg: #2a1a14; --ok: #6cc690; --ok-bg: #14231a;
+      --answer: #6ea4f0; --answer-bg: #141f2e; --warn-bg: #2b2412; --warn-line: #6b5a22;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.1rem; margin: 24px 0 8px; }
+  .beta { font-size: .7rem; font-weight: 700; letter-spacing: .08em; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 99px; vertical-align: middle; }
+  .notice { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 8px; padding: 10px 14px; margin: 12px 0 0; font-size: .92rem; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  nav { display: flex; gap: 4px; margin: 20px 0 0; border-bottom: 1px solid var(--line); }
+  nav button { background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 14px; font: inherit; color: var(--muted); cursor: pointer; }
+  nav button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+  nav button:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  section[hidden] { display: none; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+  input[type="text"], textarea, select { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; }
+  input[type="text"] { flex: 1 1 260px; }
+  textarea { width: 100%; min-height: 150px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .88rem; }
+  button.primary { background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+  button.secondary { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 9px 14px; font: inherit; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .cards { display: grid; gap: 10px; margin-top: 12px; }
+  .line { color: var(--muted); font-size: .9rem; margin: 10px 0 -4px; }
+  .line b { color: var(--text); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-left-width: 6px; border-radius: 8px; padding: 10px 14px; }
+  .card .tag { font-size: .72rem; font-weight: 700; letter-spacing: .06em; }
+  .card .who { color: var(--muted); font-size: .8rem; margin-left: 6px; font-weight: 400; letter-spacing: 0; }
+  .card p { margin: 2px 0; }
+  .card .src { color: var(--muted); font-size: .8rem; margin-top: 6px; }
+  .card.diff { border-left-color: var(--diff); background: var(--diff-bg); } .card.diff .tag { color: var(--diff); }
+  .card.ok { border-left-color: var(--ok); background: var(--ok-bg); } .card.ok .tag { color: var(--ok); }
+  .card.answer { border-left-color: var(--answer); background: var(--answer-bg); } .card.answer .tag { color: var(--answer); }
+  .quiet { color: var(--muted); font-size: .85rem; font-style: italic; margin: 2px 0 0; }
+  .errors { color: var(--diff); white-space: pre-wrap; font-size: .9rem; }
+  .status { font-size: .9rem; color: var(--muted); min-height: 1.4em; }
+  progress { width: 220px; vertical-align: middle; }
+  footer { margin-top: 40px; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 14px; }
+  a { color: var(--accent); }
+  label.check { display: flex; gap: 8px; align-items: flex-start; font-size: .92rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Live Meeting Fact-Checker <span class="beta">BETA</span></h1>
+  <p class="muted" style="margin:0">Catches wrong numbers as they are said, and answers quick questions, using <em>your</em> metric catalog.</p>
+  <p class="notice" role="note">
+    <strong>All sample data is fictional</strong> ("Acme Cloud" does not exist).
+    Everything runs in your browser: your catalog, sentences and audio are <strong>never uploaded</strong>.
+    The only download is the speech model, once, from a public CDN, if you use the Live tab.
+  </p>
+
+  <nav role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-try" aria-selected="true" aria-controls="try">Try it</button>
+    <button role="tab" id="tab-live" aria-selected="false" aria-controls="live">Live (audio)</button>
+    <button role="tab" id="tab-cat" aria-selected="false" aria-controls="catalog">Catalog</button>
+  </nav>
+
+  <!-- TRY IT -->
+  <section id="try" role="tabpanel" aria-labelledby="tab-try">
+    <h2>Type a sentence</h2>
+    <div class="row">
+      <input type="text" id="sentence" placeholder='e.g. Revenue in March was about $2.1M' aria-label="A sentence said in a meeting">
+      <button class="primary" id="checkOne">Check</button>
+    </div>
+    <p class="muted">Try: <em>Churn in March was 6%</em> · <em>Active customers in June were 12,900</em> · <em>What does MRR mean?</em> · <em>NPS in March was 60</em></p>
+
+    <h2>Or paste a whole meeting</h2>
+    <p class="muted">One line per sentence group, as <code>Name: what they said</code>.</p>
+    <textarea id="transcript" aria-label="Meeting transcript" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="primary" id="runTranscript">Check the meeting</button>
+      <button class="secondary" id="loadExample">Load the example meeting</button>
+      <label class="muted"><input type="checkbox" id="showQuiet"> show why it stayed quiet</label>
+    </div>
+    <div id="out" class="cards" aria-live="polite"></div>
+  </section>
+
+  <!-- LIVE -->
+  <section id="live" role="tabpanel" aria-labelledby="tab-live" hidden>
+    <h2>Listen to a real conversation</h2>
+    <p class="muted">The speech-to-text model runs <strong>in your browser</strong>. Audio never leaves your computer. Speech is matched in English for now.</p>
+    <label class="check"><input type="checkbox" id="consent"> <span>I told everyone in this conversation that it is being transcribed. I will not use this with external parties unless they agree.</span></label>
+    <div class="row">
+      <label>Model
+        <select id="model">
+          <option value="Xenova/whisper-tiny.en">tiny.en: fast, about 40 MB</option>
+          <option value="Xenova/whisper-base.en">base.en: better, about 80 MB</option>
+        </select>
+      </label>
+    </div>
+    <div class="row">
+      <button class="primary" id="startMic" disabled>🎙️ Listen to my microphone</button>
+      <button class="primary" id="startTab" disabled>🖥️ Listen to a meeting tab</button>
+      <button class="secondary" id="stopLive" disabled>Stop</button>
+    </div>
+    <p class="muted">
+      <strong>Meeting tab:</strong> in Chrome or Edge, pick the browser <em>tab</em> with your call and tick <em>"Share tab audio"</em>.
+      Without headphones, the microphone also hears the speakers; the app ignores the microphone while the tab is speaking.
+      You can use both at once.
+    </p>
+    <div class="status" id="liveStatus" role="status"></div>
+    <progress id="progress" value="0" max="100" hidden></progress>
+    <div id="liveCards" class="cards" aria-live="polite"></div>
+    <h2>Transcript</h2>
+    <div id="liveLines" class="muted"></div>
+  </section>
+
+  <!-- CATALOG -->
+  <section id="catalog" role="tabpanel" aria-labelledby="tab-cat" hidden>
+    <h2>Your metric catalog</h2>
+    <p class="muted">This is what the checker knows. Replace the fictional metrics with yours (it stays in this browser tab), then go back to <em>Try it</em>.
+      Format: <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker/blob/main/docs/METRIC_CATALOG.md">metric catalog spec</a>.</p>
+    <textarea id="catalogJson" style="min-height:380px" aria-label="Catalog JSON" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="primary" id="applyCatalog">Validate and use</button>
+      <button class="secondary" id="resetCatalog">Reset to the fictional sample</button>
+      <button class="secondary" id="downloadCatalog">Download</button>
+    </div>
+    <div id="catalogMsg" class="errors" role="alert"></div>
+  </section>
+
+  <footer>
+    Beta. Ideas and bugs welcome in
+    <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker/discussions">Discussions</a> and
+    <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker/issues">Issues</a>.
+    <a href="https://github.com/laviniarochaprec/live-meeting-fact-checker/blob/main/docs/BETA_TESTING.md">Beta testing guide</a>.
+  </footer>
+</main>
+<script src="engine.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
