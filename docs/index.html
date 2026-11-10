@@ -66,7 +66,7 @@
   <p class="notice" role="note">
     <strong>All sample data is fictional</strong> ("Acme Cloud" does not exist).
     Everything runs in your browser: your catalog, sentences and audio are <strong>never uploaded</strong>.
-    The only download is the speech model, once, from a public CDN, if you use the Live tab.
+    The only download is the speech model (40 to 80 MB), once, from a public CDN, if you use the Live tab.
   </p>
 
   <nav role="tablist" aria-label="Sections">
@@ -103,8 +103,8 @@
     <div class="row">
       <label>Model
         <select id="model">
-          <option value="Xenova/whisper-tiny.en">tiny.en: fast, about 40 MB</option>
-          <option value="Xenova/whisper-base.en">base.en: better, about 80 MB</option>
+          <option value="Xenova/whisper-base.en">base.en: better, about 80 MB (recommended)</option>
+          <option value="Xenova/whisper-tiny.en">tiny.en: faster, about 40 MB, mishears more</option>
         </select>
       </label>
     </div>

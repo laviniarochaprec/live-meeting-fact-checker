@@ -163,7 +163,7 @@ async function loadModel(name) {
   setStatus(`Downloading the speech model (${name}). This happens once; your browser caches it.`);
   const { pipeline, env } = await import(CDN);
   env.allowLocalModels = false;
-  env.backends.onnx.wasm.proxy = true; // run inference off the main thread so audio capture does not stutter
+  env.backends.onnx.wasm.proxy = false; // a worker loaded from the CDN is refused by browsers, so inference runs on the main thread for now
   const fn = await pipeline("automatic-speech-recognition", name, {
     device: "wasm",
     progress_callback: (p) => { if (p.status === "progress" && typeof p.progress === "number") bar.value = p.progress; },
@@ -239,7 +239,8 @@ function addLine(label, text) {
   box.prepend(p);
 }
 
-function handleText(label, text) {
+function handleText(label, raw) {
+  const text = FC.cleanTranscript(raw); // collapses stutters, drops model loops
   if (!text || JUNK.test(text)) return;
   addLine(label, text);
   const box = $("#liveCards");
